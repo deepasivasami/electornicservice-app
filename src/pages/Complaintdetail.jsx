@@ -5,8 +5,15 @@ import "../Admin.css";
 
 const Complaintdetail = () => {
   const [form, setForm] = useState({
-    name: "", phone: "", device: "", model: "",
-    problem: "", serviceType: "", address: "", location: "", image: ""
+    name: "", 
+    phone: "",
+     device: "", 
+     model: "",
+    problem: "", 
+    serviceType: "",
+     address: "",
+      location: "", 
+      image: ""
   });
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -27,7 +34,7 @@ const Complaintdetail = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const data = await apiRequest("/complaint", "POST", form);
+      const data = await apiRequest("/complaintdetail", "POST", form);
 
       if (data.status) {
         alert("Complaint Submitted");
