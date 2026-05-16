@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { apiRequest } from "../api/apiRequest"; 
 import "../Admin.css";
 
 const AllComplaint = () => {
@@ -6,16 +7,23 @@ const AllComplaint = () => {
   const [filter, setFilter] = useState("All");
 
   useEffect(() => {
-    fetch("http://localhost:7000/complaint")
-      .then((res) => res.json())
-      .then((resData) => {
-        console.log("ALL COMPLAINTS:", resData);
+    
+    const fetchComplaints = async () => {
+      const resData = await apiRequest("/complaint");
+      console.log("ALL COMPLAINTS:", resData);
+      if (resData && Array.isArray(resData)) {
         setData(resData);
-      })
-      .catch((err) => console.log(err));
+      }
+    };
+
+    fetchComplaints();
   }, []);
 
-  // FILTER DATA
+  
+  const getImageUrl = (image) => {
+    return `https://serviceapp-1-mqaj.onrender.com/uploads/${image}`; 
+  };
+
   const filtered = filter === "All"
     ? data
     : data.filter((item) => item.status === filter);
@@ -29,8 +37,7 @@ const AllComplaint = () => {
         padding: "24px",
       }}
     >
-
-      {/* ── HEADER ── */}
+     
       <p style={{ fontSize: "18px", fontWeight: "600", color: "#e0e7ff", marginBottom: "4px" }}>
         All Complaints
       </p>
@@ -40,7 +47,6 @@ const AllComplaint = () => {
 
       {/* ── FILTER BUTTONS ── */}
       <div style={{ display: "flex", gap: "10px", marginBottom: "24px" }}>
-
         {["All", "Pending", "Completed", "Assigned"].map((f) => (
           <button
             key={f}
@@ -66,20 +72,15 @@ const AllComplaint = () => {
             }}
           >
             {f}
-            {/* COUNT */}
             <span style={{
-              marginLeft: "6px",
-              padding: "1px 6px",
-              borderRadius: "10px",
-              fontSize: "10px",
-              background: "rgba(255,255,255,0.1)",
-              color: "inherit",
+              marginLeft: "6px", padding: "1px 6px",
+              borderRadius: "10px", fontSize: "10px",
+              background: "rgba(255,255,255,0.1)", color: "inherit",
             }}>
               {f === "All" ? data.length : data.filter(d => d.status === f).length}
             </span>
           </button>
         ))}
-
       </div>
 
       {/* ── CARDS ── */}
@@ -106,7 +107,6 @@ const AllComplaint = () => {
                   : "3px solid #818cf8",
               }}
             >
-
               {/* CARD HEADER */}
               <div className="complaint-card-header">
                 <div className="complaint-icon">
@@ -119,14 +119,9 @@ const AllComplaint = () => {
                     {item.device}
                   </p>
                 </div>
-
-                {/* STATUS BADGE */}
                 <span style={{
-                  padding: "3px 10px",
-                  borderRadius: "20px",
-                  fontSize: "11px",
-                  fontWeight: "600",
-                  whiteSpace: "nowrap",
+                  padding: "3px 10px", borderRadius: "20px",
+                  fontSize: "11px", fontWeight: "600", whiteSpace: "nowrap",
                   ...(item.status === "Completed"
                     ? { background: "rgba(16,185,129,0.15)", color: "#10b981" }
                     : item.status === "Pending"
@@ -139,19 +134,15 @@ const AllComplaint = () => {
 
               {/* CARD BODY */}
               <div className="complaint-body">
-
-                {/* IMAGE */}
+               
                 {item.image && (
                   <img
-                    src={`http://localhost:7000/uploads/${item.image}`}
+                    src={getImageUrl(item.image)}
                     alt="complaint"
                     onError={(e) => { e.target.style.display = "none"; }}
                     style={{
-                      width: "100%",
-                      height: "130px",
-                      objectFit: "cover",
-                      borderRadius: "8px",
-                      marginBottom: "12px",
+                      width: "100%", height: "130px", objectFit: "cover",
+                      borderRadius: "8px", marginBottom: "12px",
                       border: "1px solid rgba(0,255,255,0.15)",
                     }}
                   />
@@ -175,16 +166,12 @@ const AllComplaint = () => {
                     <span>{item.technicianId?.name || item.technicianId || "Not Assigned"}</span>
                   </div>
                 </div>
-
               </div>
 
               {/* CARD FOOTER */}
               <div style={{
-                padding: "10px 16px",
-                borderTop: "1px solid rgba(0,255,255,0.08)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
+                padding: "10px 16px", borderTop: "1px solid rgba(0,255,255,0.08)",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
                 background: "rgba(0,0,0,0.1)",
               }}>
                 <span style={{ fontSize: "11px", color: "#475569" }}>
@@ -199,7 +186,6 @@ const AllComplaint = () => {
           ))}
         </div>
       )}
-
     </div>
   );
 };

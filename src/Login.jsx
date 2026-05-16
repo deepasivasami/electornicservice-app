@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiRequest } from "../api/apiRequest"; 
 import "./Register.css";
 
 function Login() {
-
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -14,148 +14,66 @@ function Login() {
 
   const [loading, setLoading] = useState(false);
 
-  // INPUT CHANGE
   const handleChange = (e) => {
-
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
-
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // LOGIN
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     try {
-
       setLoading(true);
 
-      const res = await fetch(
-        "http://localhost:7000/login",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-            phone: form.phone,
-            password: form.password,
-            role: form.role
-          })
-
-        }
-      );
-
-      const data = await res.json();
+      
+      const data = await apiRequest("/login", "POST", {
+        phone: form.phone,
+        password: form.password,
+        role: form.role
+      });
 
       console.log("LOGIN DATA :", data);
 
-      // LOGIN SUCCESS
       if (data.status) {
-
         alert("Login Successfully");
 
-        // JWT TOKEN SAVE
-        localStorage.setItem(
-          "token",
-          data.token
-        );
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
 
-        // USER DATA SAVE
-        localStorage.setItem(
-          "user",
-          JSON.stringify(data.user)
-        );
-
-        // TECHNICIAN LOGIN
         if (form.role === "technician") {
-
-          // SAVE TECHNICIAN ID
-          localStorage.setItem(
-            "technicianId",
-            data.user._id
-          );
-
-          console.log(
-            "TECH ID SAVED :",
-            data.user._id
-          );
-
-          navigate(
-            "/technician/technicianservice"
-          );
-
-        }
-
-        // USER LOGIN
+          localStorage.setItem("technicianId", data.user._id);
+          navigate("/technician/technicianservice");
+        } 
         else if (form.role === "user") {
-
           navigate("/Customers");
-
-        }
-
-        // ADMIN LOGIN
+        } 
         else if (form.role === "admin") {
-
           navigate("/admin");
-
         }
 
+      } else {
+        alert("Login Failed : " + data.message);
       }
 
-      // LOGIN FAILED
-      else {
-
-        alert(
-          "Login Failed : " + data.message
-        );
-
-      }
-
-    }
-
-    catch (err) {
-
+    } catch (err) {
       console.log(err);
-
       alert("Server Error");
-
-    }
-
-    finally {
-
+    } finally {
       setLoading(false);
-
     }
-
   };
 
   return (
-
     <div className="container">
-
       <div className="cards">
 
-        {/* LEFT */}
         <div className="left1">
-
           <h2>Welcome Back</h2>
-
         </div>
 
-        {/* RIGHT */}
         <div className="right">
-
           <form onSubmit={handleSubmit}>
-
             <h2>Login</h2>
 
-            {/* PHONE */}
             <input
               type="number"
               name="phone"
@@ -165,7 +83,6 @@ function Login() {
               required
             />
 
-            {/* PASSWORD */}
             <input
               type="password"
               name="password"
@@ -175,69 +92,65 @@ function Login() {
               required
             />
 
-            {/* ROLE */}
             <select
               name="role"
               value={form.role}
               onChange={handleChange}
               required
             >
-
-              <option value="">
-                Select Role
-              </option>
-
-              <option value="user">
-                User
-              </option>
-
-              <option value="admin">
-                Admin
-              </option>
-
-              <option value="technician">
-                Technician
-              </option>
-
+              <option value="">Select Role</option>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+              <option value="technician">Technician</option>
             </select>
 
-            {/* BUTTON */}
-            <button
-              className="btn"
-              type="submit"
-              disabled={loading}
-            >
-
-              {
-                loading
-                  ? "Loading..."
-                  : "Login"
-              }
-
+            <button className="btn" type="submit" disabled={loading}>
+              {loading ? "Loading..." : "Login"}
             </button>
 
           </form>
 
-          {/* REGISTER */}
-          <p
-            onClick={() =>
-              navigate("/register")
-            }
-          >
+          <p onClick={() => navigate("/register")}>
             New user? Register
           </p>
-
         </div>
 
       </div>
-
     </div>
-
   );
-
 }
 
 export default Login;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // import React, { useState } from "react";
 // import { useNavigate } from "react-router-dom";
@@ -255,7 +168,7 @@ export default Login;
 
 //   const [loading, setLoading] = useState(false);
 
-//   // INPUT CHANGE
+ 
 //   const handleChange = (e) => {
 
 //     setForm({
@@ -265,7 +178,7 @@ export default Login;
 
 //   };
 
-//   // LOGIN
+  
 //   const handleSubmit = async (e) => {
 
 //     e.preventDefault();
@@ -296,15 +209,27 @@ export default Login;
 
 //       console.log("LOGIN DATA :", data);
 
-//       // LOGIN SUCCESS
+      
 //       if (data.status) {
 
 //         alert("Login Successfully");
 
-//         // TECHNICIAN LOGIN
+      
+//         localStorage.setItem(
+//           "token",
+//           data.token
+//         );
+
+        
+//         localStorage.setItem(
+//           "user",
+//           JSON.stringify(data.user)
+//         );
+
+        
 //         if (form.role === "technician") {
 
-//           // SAVE TECHNICIAN ID
+       
 //           localStorage.setItem(
 //             "technicianId",
 //             data.user._id
@@ -321,14 +246,13 @@ export default Login;
 
 //         }
 
-//         // USER LOGIN
+        
 //         else if (form.role === "user") {
 
 //           navigate("/Customers");
 
 //         }
 
-//         // ADMIN LOGIN
 //         else if (form.role === "admin") {
 
 //           navigate("/admin");
@@ -337,7 +261,7 @@ export default Login;
 
 //       }
 
-//       // LOGIN FAILED
+      
 //       else {
 
 //         alert(
@@ -370,21 +294,21 @@ export default Login;
 
 //       <div className="cards">
 
-//         {/* LEFT */}
+      
 //         <div className="left1">
 
 //           <h2>Welcome Back</h2>
 
 //         </div>
 
-//         {/* RIGHT */}
+        
 //         <div className="right">
 
 //           <form onSubmit={handleSubmit}>
 
 //             <h2>Login</h2>
 
-//             {/* PHONE */}
+           
 //             <input
 //               type="number"
 //               name="phone"
@@ -394,7 +318,7 @@ export default Login;
 //               required
 //             />
 
-//             {/* PASSWORD */}
+          
 //             <input
 //               type="password"
 //               name="password"
@@ -404,7 +328,6 @@ export default Login;
 //               required
 //             />
 
-//             {/* ROLE */}
 //             <select
 //               name="role"
 //               value={form.role}
@@ -430,7 +353,7 @@ export default Login;
 
 //             </select>
 
-//             {/* BUTTON */}
+       
 //             <button
 //               className="btn"
 //               type="submit"
@@ -447,7 +370,7 @@ export default Login;
 
 //           </form>
 
-//           {/* REGISTER */}
+         
 //           <p
 //             onClick={() =>
 //               navigate("/register")
@@ -467,5 +390,3 @@ export default Login;
 // }
 
 // export default Login;
-
-
